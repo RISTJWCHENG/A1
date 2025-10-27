@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>我的个人视频网站</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#4f46e5;--muted:#94a3b8;--glass:rgba(255,255,255,0.03)}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans",Helvetica,Arial; background:linear-gradient(180deg,#071028 0%, #071b2b 100%);color:#e6eef8}
+    .container{max-width:1100px;margin:36px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    h1{font-size:20px;margin:0}
+    .subtitle{color:var(--muted);font-size:13px}
+
+    .layout{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+
+    /* video area */
+    .player-wrap{display:flex;flex-direction:column;gap:12px}
+    video{width:100%;border-radius:10px;background:#000;max-height:65vh}
+    .meta{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .title{font-weight:600}
+    .actions{display:flex;gap:8px;align-items:center}
+    .btn{background:var(--glass);border:1px solid rgba(255,255,255,0.03);padding:8px 10px;border-radius:8px;color:inherit;font-size:13px;cursor:pointer}
+
+    /* playlist */
+    .list-title{font-size:14px;color:var(--muted);margin-bottom:12px}
+    .video-item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;cursor:pointer}
+    .video-item:hover{background:rgba(255,255,255,0.02)}
+    .thumb{width:92px;height:52px;background:#081226;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+    .video-item .meta-right{flex:1}
+    .small{font-size:12px;color:var(--muted)}
+
+    footer{margin-top:28px;color:var(--muted);font-size:12px;text-align:center}
+
+    /* responsive */
+    @media (max-width:900px){.layout{grid-template-columns:1fr}.container{padding:12px}.subtitle{display:none}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>我的个人视频网站</h1>
+        <div class="subtitle">收藏与分享你喜欢的视频 — 简洁、私有部署友好</div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="downloadBtn">下载视频</button>
+        <button class="btn" id="openInNew">在新标签打开</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <main class="card player-wrap" aria-label="视频播放器">
+        <!-- 使用浏览器自带 controls，确保兼容性；下面也提供自定义扩展按钮 -->
+        <video id="mainVideo" controls playsinline preload="metadata"
+          src="https://link.storjshare.io/raw/jxmeeggvbfj2ds6pp6aziajialqq/mywebsitedata/video1.mp4">
+          您的浏览器不支持 video 标签。请下载后本地播放。
+        </video>
+
+        <div class="meta">
+          <div>
+            <div class="title">示例视频（video1.mp4）</div>
+            <div class="small">来源：StorjShare</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="pipBtn" title="画中画">PIP</button>
+            <button class="btn" id="muteBtn" title="静音/取消静音">静音</button>
+            <button class="btn" id="restartBtn" title="从头播放">重播</button>
+          </div>
+        </div>
+
+        <div style="margin-top:6px;color:var(--muted);font-size:13px">进阶：将此文件放到你的服务器（例如 nginx），用户即可通过此页面访问视频。</div>
+      </main>
+
+      <aside class="card">
+        <div class="list-title">播放列表</div>
+
+        <div class="video-item" id="item1" data-src="https://link.storjshare.io/raw/jxmeeggvbfj2ds6pp6aziajialqq/mywebsitedata/video1.mp4">
+          <div class="thumb">缩略图</div>
+          <div class="meta-right">
+            <div style="font-weight:600">video1.mp4</div>
+            <div class="small">大小：未知 · 时长：未知</div>
+          </div>
+        </div>
+
+        <!-- 可添加更多视频项 -->
+      </aside>
+    </div>
+
+    <footer>© {new Date().getFullYear()} 我的个人视频网站 — 由你托管与管理</footer>
+  </div>
+
+  <script>
+    const video = document.getElementById('mainVideo');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const openInNew = document.getElementById('openInNew');
+    const pipBtn = document.getElementById('pipBtn');
+    const muteBtn = document.getElementById('muteBtn');
+    const restartBtn = document.getElementById('restartBtn');
+
+    // 下载按钮，点击后发起下载
+    downloadBtn.addEventListener('click', ()=>{
+      const a = document.createElement('a');
+      a.href = video.currentSrc || video.src;
+      a.download = '';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+
+    // 在新标签打开原始媒体链接
+    openInNew.addEventListener('click', ()=>{
+      const url = video.currentSrc || video.src;
+      window.open(url, '_blank', 'noopener');
+    });
+
+    // 画中画（如果浏览器支持）
+    pipBtn.addEventListener('click', async ()=>{
+      try{
+        if (document.pictureInPictureElement) {
+          await document.exitPictureInPicture();
+        } else {
+          await video.requestPictureInPicture();
+        }
+      }catch(e){alert('画中画功能不可用：'+e.message)}
+    });
+
+    // 静音切换
+    muteBtn.addEventListener('click', ()=>{
+      video.muted = !video.muted;
+      muteBtn.textContent = video.muted? '已静音' : '静音';
+    });
+
+    // 重播
+    restartBtn.addEventListener('click', ()=>{video.currentTime=0; video.play();});
+
+    // 点击播放列表项切换视频
+    document.querySelectorAll('.video-item').forEach(item=>{
+      item.addEventListener('click', ()=>{
+        const src = item.dataset.src;
+        if(!src) return;
+        // 切换 src 并播放
+        video.src = src;
+        video.play().catch(()=>{});
+      });
+    });
+
+    // 键盘快捷键：空格播放/暂停，m 静音，f 全屏
+    document.addEventListener('keydown', (e)=>{
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.code === 'Space') { e.preventDefault(); if(video.paused) video.play(); else video.pause(); }
+      if (e.key.toLowerCase() === 'm') { video.muted = !video.muted; }
+      if (e.key.toLowerCase() === 'f') { if(document.fullscreenElement) document.exitFullscreen(); else video.requestFullscreen(); }
+    });
+  </script>
+</body>
+</html>
