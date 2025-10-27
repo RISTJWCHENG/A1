@@ -66,7 +66,7 @@
           </div>
         </div>
 
-        <div style="margin-top:6px;color:var(--muted);font-size:13px">进阶：将此文件放到你的服务器（例如 nginx），用户即可通过此页面访问视频。</div>
+        <div style="margin-top:6px;color:var(--muted);font-size:13px">进阶：将此文件放到你的服务器（例如 nginx 或 GitHub Pages），用户即可通过此页面访问视频。</div>
       </main>
 
       <aside class="card">
@@ -112,13 +112,22 @@
           </div>
         </div>
 
+        <div class="video-item" data-src="https://pub-8231e5ac90c04ce199d0a2879d3ea6ec.r2.dev/2013_N%20DYNAMIC%20CURVES%20RIGGING%20SETUP%20TOOL_By-RIST%20JIANWEN%20CHENG.mov">
+          <div class="thumb">缩略图</div>
+          <div class="meta-right">
+            <div style="font-weight:600">2013_N Dynamic Curves Rigging.mov</div>
+            <div class="small">来源：Cloudflare R2</div>
+          </div>
+        </div>
+
       </aside>
     </div>
 
-    <footer>© {new Date().getFullYear()} 我的个人视频网站 — 由你托管与管理</footer>
+    <footer>© <span id="year"></span> 我的个人视频网站 — 由你托管与管理</footer>
   </div>
 
   <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
     const video = document.getElementById('mainVideo');
     const downloadBtn = document.getElementById('downloadBtn');
     const openInNew = document.getElementById('openInNew');
